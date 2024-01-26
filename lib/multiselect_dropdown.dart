@@ -776,112 +776,119 @@ class _MultiSelectDropDownState<T> extends State<MultiSelectDropDown<T>> {
                           ? -widget.dropdownMargin!
                           : widget.dropdownMargin!)
                   : Offset.zero,
-              child: Material(
-                  color: widget.dropdownBackgroundColor ?? Colors.white,
-                  // borderRadius: widget.dropdownBorderRadius != null
-                  //     ? BorderRadius.circular(widget.dropdownBorderRadius!)
-                  //     : null,
-                  elevation: 4,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(
-                      Radius.circular(widget.dropdownBorderRadius ?? 0),
+              child: Padding(
+                padding: const EdgeInsets.only(
+                  top: 14,
+                ),
+                child: Material(
+                    color: widget.dropdownBackgroundColor ?? Colors.white,
+                    // borderRadius: widget.dropdownBorderRadius != null
+                    //     ? BorderRadius.circular(widget.dropdownBorderRadius!)
+                    //     : null,
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(
+                        Radius.circular(widget.dropdownBorderRadius ?? 0),
+                      ),
                     ),
-                  ),
-                  shadowColor: Colors.black,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      backgroundBlendMode: BlendMode.dstATop,
-                      color: widget.dropdownBackgroundColor ?? Colors.white,
-                      borderRadius: widget.dropdownBorderRadius != null
-                          ? BorderRadius.circular(widget.dropdownBorderRadius!)
-                          : null,
-                    ),
-                    constraints: widget.searchEnabled
-                        ? BoxConstraints.loose(
-                            Size(size.width, widget.dropdownHeight + 50))
-                        : BoxConstraints.loose(
-                            Size(size.width, widget.dropdownHeight)),
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        if (widget.searchEnabled) ...[
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: TextFormField(
-                              controller: searchController,
-                              onTapOutside: (_) {},
-                              scrollPadding: EdgeInsets.only(
-                                  bottom:
-                                      MediaQuery.of(context).viewInsets.bottom),
-                              focusNode: _searchFocusNode,
-                              decoration: InputDecoration(
-                                fillColor: widget.searchBackgroundColor ??
-                                    Colors.grey.shade200,
-                                isDense: true,
-                                filled: widget.searchBackgroundColor != null,
-                                hintText: widget.searchLabel,
-                                enabledBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(
-                                    color: Colors.grey.shade300,
-                                    width: 0.8,
+                    shadowColor: Colors.black,
+                    child: Container(
+                      decoration: BoxDecoration(
+                        backgroundBlendMode: BlendMode.dstATop,
+                        color: widget.dropdownBackgroundColor ?? Colors.white,
+                        borderRadius: widget.dropdownBorderRadius != null
+                            ? BorderRadius.circular(
+                                widget.dropdownBorderRadius!)
+                            : null,
+                      ),
+                      constraints: widget.searchEnabled
+                          ? BoxConstraints.loose(
+                              Size(size.width, widget.dropdownHeight + 50))
+                          : BoxConstraints.loose(
+                              Size(size.width, widget.dropdownHeight)),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          if (widget.searchEnabled) ...[
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: TextFormField(
+                                controller: searchController,
+                                onTapOutside: (_) {},
+                                scrollPadding: EdgeInsets.only(
+                                    bottom: MediaQuery.of(context)
+                                        .viewInsets
+                                        .bottom),
+                                focusNode: _searchFocusNode,
+                                decoration: InputDecoration(
+                                  fillColor: widget.searchBackgroundColor ??
+                                      Colors.grey.shade200,
+                                  isDense: true,
+                                  filled: widget.searchBackgroundColor != null,
+                                  hintText: widget.searchLabel,
+                                  enabledBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide(
+                                      color: Colors.grey.shade300,
+                                      width: 0.8,
+                                    ),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(12),
+                                    borderSide: BorderSide(
+                                      color: Theme.of(context).primaryColor,
+                                      width: 0.8,
+                                    ),
+                                  ),
+                                  suffixIcon: IconButton(
+                                    icon: const Icon(Icons.close),
+                                    onPressed: () {
+                                      searchController.clear();
+                                      dropdownState(() {
+                                        options = _options;
+                                      });
+                                    },
                                   ),
                                 ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide(
-                                    color: Theme.of(context).primaryColor,
-                                    width: 0.8,
-                                  ),
-                                ),
-                                suffixIcon: IconButton(
-                                  icon: const Icon(Icons.close),
-                                  onPressed: () {
-                                    searchController.clear();
-                                    dropdownState(() {
-                                      options = _options;
-                                    });
-                                  },
-                                ),
+                                onChanged: (value) {
+                                  dropdownState(() {
+                                    options = _options
+                                        .where((element) => element.label
+                                            .toLowerCase()
+                                            .contains(value.toLowerCase()))
+                                        .toList();
+                                  });
+                                },
                               ),
-                              onChanged: (value) {
-                                dropdownState(() {
-                                  options = _options
-                                      .where((element) => element.label
-                                          .toLowerCase()
-                                          .contains(value.toLowerCase()))
-                                      .toList();
-                                });
+                            ),
+                            const Divider(
+                              height: 1,
+                            ),
+                          ],
+                          Expanded(
+                            child: ListView.separated(
+                              separatorBuilder: (_, __) =>
+                                  widget.optionSeparator ??
+                                  const SizedBox(height: 0),
+                              shrinkWrap: true,
+                              padding: EdgeInsets.zero,
+                              itemCount: options.length,
+                              itemBuilder: (context, index) {
+                                final option = options[index];
+                                final isSelected =
+                                    selectedOptions.contains(option);
+                                final primaryColor =
+                                    Theme.of(context).primaryColor;
+
+                                return _buildOption(option, primaryColor,
+                                    isSelected, dropdownState, selectedOptions);
                               },
                             ),
                           ),
-                          const Divider(
-                            height: 1,
-                          ),
                         ],
-                        Expanded(
-                          child: ListView.separated(
-                            separatorBuilder: (_, __) =>
-                                widget.optionSeparator ??
-                                const SizedBox(height: 0),
-                            shrinkWrap: true,
-                            padding: EdgeInsets.zero,
-                            itemCount: options.length,
-                            itemBuilder: (context, index) {
-                              final option = options[index];
-                              final isSelected =
-                                  selectedOptions.contains(option);
-                              final primaryColor =
-                                  Theme.of(context).primaryColor;
-
-                              return _buildOption(option, primaryColor,
-                                  isSelected, dropdownState, selectedOptions);
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  )),
+                      ),
+                    )),
+              ),
             ),
           ],
         );
