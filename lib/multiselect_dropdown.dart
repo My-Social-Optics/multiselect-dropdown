@@ -88,6 +88,11 @@ class MultiSelectDropDown<T> extends StatefulWidget {
   final double? dropdownBorderRadius;
   final double? dropdownMargin;
 
+  // Selected Item text style
+  final TextStyle? selectedItemStyle;
+
+  final Widget? prefixIcon;
+
   // network configuration
   final NetworkConfig? networkConfig;
   final Future<List<ValueItem<T>>> Function(dynamic)? responseParser;
@@ -253,7 +258,9 @@ class MultiSelectDropDown<T> extends StatefulWidget {
       this.dropdownMargin,
       this.dropdownBackgroundColor,
       this.searchBackgroundColor,
-      this.searchLabel = 'Search'})
+      this.searchLabel = 'Search',
+      this.selectedItemStyle,
+      this.prefixIcon})
       : networkConfig = null,
         responseParser = null,
         responseErrorBuilder = null,
@@ -310,7 +317,9 @@ class MultiSelectDropDown<T> extends StatefulWidget {
       this.dropdownMargin,
       this.dropdownBackgroundColor,
       this.searchBackgroundColor,
-      this.searchLabel = 'Search'})
+      this.searchLabel = 'Search',
+      this.selectedItemStyle,
+      this.prefixIcon})
       : options = const [],
         super(key: key);
 
@@ -522,6 +531,7 @@ class _MultiSelectDropDownState<T> extends State<MultiSelectDropDown<T>> {
             decoration: _getContainerDecoration(),
             child: Row(
               children: [
+                widget.prefixIcon ?? const SizedBox(),
                 Expanded(
                   child: _getContainerContent(),
                 ),
@@ -560,7 +570,10 @@ class _MultiSelectDropDownState<T> extends State<MultiSelectDropDown<T>> {
 
     if (widget.selectionType == SelectionType.single &&
         !widget.showChipInSingleSelectMode) {
-      return SingleSelectedItem(label: _selectedOptions.first.label);
+      return SingleSelectedItem(
+        label: _selectedOptions.first.label,
+        textStyle: widget.selectedItemStyle,
+      );
     }
 
     return _buildSelectedItems();
