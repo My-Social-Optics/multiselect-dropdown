@@ -94,7 +94,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         label: 'Option 5', value: User(name: 'User 5', id: 5)),
                   ],
                   maxItems: 4,
-                  selectionType: SelectionType.multi,
+                  selectionType: SelectionType.single,
                   chipConfig: const ChipConfig(
                       wrapType: WrapType.wrap, backgroundColor: Colors.red),
                   optionTextStyle: const TextStyle(fontSize: 16),
