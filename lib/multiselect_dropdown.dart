@@ -597,7 +597,7 @@ class _MultiSelectDropDownState<T> extends State<MultiSelectDropDown<T>> {
         color: widget.fieldBackgroundColor ?? Colors.white,
         borderRadius: widget.radiusGeometry ??
             BorderRadius.circular(widget.borderRadius ?? 12.0),
-        border: _selectionMode
+        border: _focusNode.hasFocus
             ? Border.all(
                 color: widget.focusedBorderColor ?? Colors.grey,
                 width: widget.focusedBorderWidth ?? 0.4,
