@@ -26,6 +26,7 @@ class MyApp extends StatelessWidget {
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
         primarySwatch: Colors.green,
+        useMaterial3: true,
       ),
       home: const MyHomePage(),
     );
@@ -88,6 +89,10 @@ class _MyHomePageState extends State<MyHomePage> {
                         label: 'Option 2', value: User(name: 'User 2', id: 2)),
                     ValueItem(
                         label: 'Option 3', value: User(name: 'User 3', id: 3)),
+                    ValueItem(
+                        label: 'Option 4', value: User(name: 'User 4', id: 4)),
+                    ValueItem(
+                        label: 'Option 5', value: User(name: 'User 5', id: 5)),
                     ValueItem(
                         label: 'Option 4', value: User(name: 'User 4', id: 4)),
                     ValueItem(
