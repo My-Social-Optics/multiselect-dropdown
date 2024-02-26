@@ -840,7 +840,18 @@ class _MultiSelectDropDownState<T> extends State<MultiSelectDropDown<T>> {
                                         .viewInsets
                                         .bottom),
                                 focusNode: _searchFocusNode,
-                                decoration: widget.searchInputDecoration ??
+                                decoration: widget.searchInputDecoration
+                                        ?.copyWith(
+                                      suffixIcon: IconButton(
+                                        icon: const Icon(Icons.close),
+                                        onPressed: () {
+                                          searchController.clear();
+                                          dropdownState(() {
+                                            options = _options;
+                                          });
+                                        },
+                                      ),
+                                    ) ??
                                     InputDecoration(
                                       fillColor: widget.searchBackgroundColor ??
                                           Colors.grey.shade200,
