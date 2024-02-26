@@ -7,6 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart';
 import 'package:multi_dropdown/models/network_config.dart';
 import 'package:multi_dropdown/widgets/hint_text.dart';
+import 'package:multi_dropdown/widgets/hover.dart';
 import 'package:multi_dropdown/widgets/selection_chip.dart';
 import 'package:multi_dropdown/widgets/single_selected_item.dart';
 import 'package:http/http.dart' as http;
@@ -931,7 +932,49 @@ class _MultiSelectDropDownState<T> extends State<MultiSelectDropDown<T>> {
 
   Widget _buildOption(ValueItem<T> option, Color primaryColor, bool isSelected,
       StateSetter dropdownState, List<ValueItem<T>> selectedOptions) {
-    return InkWell(
+    return HoverWidget(
+      onTap: () {
+        if (widget.selectionType == SelectionType.multi) {
+          if (isSelected) {
+            dropdownState(() {
+              selectedOptions.remove(option);
+            });
+            setState(() {
+              _selectedOptions.remove(option);
+            });
+          } else {
+            final bool hasReachMax = widget.maxItems == null
+                ? false
+                : (_selectedOptions.length + 1) > widget.maxItems!;
+            if (hasReachMax) return;
+
+            dropdownState(() {
+              selectedOptions.add(option);
+            });
+            setState(() {
+              _selectedOptions.add(option);
+            });
+          }
+        } else {
+          dropdownState(() {
+            selectedOptions.clear();
+            selectedOptions.add(option);
+          });
+          setState(() {
+            _selectedOptions.clear();
+            _selectedOptions.add(option);
+          });
+          _focusNode.unfocus();
+          _searchFocusNode?.unfocus();
+        }
+
+        if (_controller != null) {
+          _controller!.value._selectedOptions.clear();
+          _controller!.value._selectedOptions.addAll(_selectedOptions);
+        }
+
+        widget.onOptionSelected?.call(_selectedOptions);
+      },
       child: ListTile(
           title: Text(option.label,
               style: widget.optionTextStyle ??
@@ -947,48 +990,6 @@ class _MultiSelectDropDownState<T> extends State<MultiSelectDropDown<T>> {
           selectedTileColor:
               widget.selectedOptionBackgroundColor ?? Colors.grey.shade200,
           enabled: !_disabledOptions.contains(option),
-          onTap: () {
-            if (widget.selectionType == SelectionType.multi) {
-              if (isSelected) {
-                dropdownState(() {
-                  selectedOptions.remove(option);
-                });
-                setState(() {
-                  _selectedOptions.remove(option);
-                });
-              } else {
-                final bool hasReachMax = widget.maxItems == null
-                    ? false
-                    : (_selectedOptions.length + 1) > widget.maxItems!;
-                if (hasReachMax) return;
-
-                dropdownState(() {
-                  selectedOptions.add(option);
-                });
-                setState(() {
-                  _selectedOptions.add(option);
-                });
-              }
-            } else {
-              dropdownState(() {
-                selectedOptions.clear();
-                selectedOptions.add(option);
-              });
-              setState(() {
-                _selectedOptions.clear();
-                _selectedOptions.add(option);
-              });
-              _focusNode.unfocus();
-              _searchFocusNode?.unfocus();
-            }
-
-            if (_controller != null) {
-              _controller!.value._selectedOptions.clear();
-              _controller!.value._selectedOptions.addAll(_selectedOptions);
-            }
-
-            widget.onOptionSelected?.call(_selectedOptions);
-          },
           trailing: _getSelectedIcon(isSelected, primaryColor)),
     );
   }
