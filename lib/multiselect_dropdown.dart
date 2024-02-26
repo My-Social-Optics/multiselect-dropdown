@@ -593,21 +593,28 @@ class _MultiSelectDropDownState<T> extends State<MultiSelectDropDown<T>> {
 
   /// Container decoration for the dropdown.
   Decoration _getContainerDecoration() {
-    return widget.inputDecoration ??
-        BoxDecoration(
-          color: widget.fieldBackgroundColor ?? Colors.white,
-          borderRadius: widget.radiusGeometry ??
-              BorderRadius.circular(widget.borderRadius ?? 12.0),
-          border: _selectionMode
-              ? Border.all(
-                  color: widget.focusedBorderColor ?? Colors.grey,
-                  width: widget.focusedBorderWidth ?? 0.4,
+    return BoxDecoration(
+        color: widget.fieldBackgroundColor ?? Colors.white,
+        borderRadius: widget.radiusGeometry ??
+            BorderRadius.circular(widget.borderRadius ?? 12.0),
+        border: _selectionMode
+            ? Border.all(
+                color: widget.focusedBorderColor ?? Colors.grey,
+                width: widget.focusedBorderWidth ?? 0.4,
+              )
+            : Border.all(
+                color: widget.borderColor ?? Colors.grey,
+                width: widget.borderWidth ?? 0.4,
+              ),
+        boxShadow: _focusNode.hasFocus
+            ? [
+                const BoxShadow(
+                  color: Color(0xFF93C5FD),
+                  blurRadius: 4,
+                  blurStyle: BlurStyle.solid,
                 )
-              : Border.all(
-                  color: widget.borderColor ?? Colors.grey,
-                  width: widget.borderWidth ?? 0.4,
-                ),
-        );
+              ]
+            : null);
   }
 
   /// Dispose the focus node and overlay entry.
@@ -722,6 +729,7 @@ class _MultiSelectDropDownState<T> extends State<MultiSelectDropDown<T>> {
     } else {
       _focusNode.requestFocus();
     }
+    setState(() {});
   }
 
   /// Get the selectedItem icon for the dropdown
@@ -803,25 +811,28 @@ class _MultiSelectDropDownState<T> extends State<MultiSelectDropDown<T>> {
                     child: Container(
                       decoration: widget.dropDownDecoration ??
                           BoxDecoration(
-                              color: widget.dropdownBackgroundColor ??
-                                  Colors.white,
-                              borderRadius: BorderRadius.circular(
-                                widget.dropdownBorderRadius ?? 8,
+                            border: Border.all(
+                                width: 1, color: const Color(0xFFF3F4F6)),
+                            color:
+                                widget.dropdownBackgroundColor ?? Colors.white,
+                            borderRadius: BorderRadius.circular(
+                              widget.dropdownBorderRadius ?? 8,
+                            ),
+                            boxShadow: const [
+                              BoxShadow(
+                                color: Color(0x0C000000),
+                                blurRadius: 10,
+                                offset: Offset(0, 4),
+                                spreadRadius: -2,
                               ),
-                              boxShadow: const [
-                                BoxShadow(
-                                  color: Color(0x0C000000),
-                                  blurRadius: 10,
-                                  offset: Offset(0, 4),
-                                  spreadRadius: -2,
-                                ),
-                                BoxShadow(
-                                  color: Color(0x0F000000),
-                                  blurRadius: 2,
-                                  offset: Offset(0, 2),
-                                  spreadRadius: -1,
-                                ),
-                              ]),
+                              BoxShadow(
+                                color: Color(0x0F000000),
+                                blurRadius: 2,
+                                offset: Offset(0, 2),
+                                spreadRadius: -1,
+                              ),
+                            ],
+                          ),
                       constraints: widget.searchEnabled
                           ? BoxConstraints.loose(
                               Size(size.width, widget.dropdownHeight + 50))
@@ -843,8 +854,12 @@ class _MultiSelectDropDownState<T> extends State<MultiSelectDropDown<T>> {
                                 focusNode: _searchFocusNode,
                                 decoration: widget.searchInputDecoration
                                         ?.copyWith(
+                                      hintText: widget.searchLabel,
                                       suffixIcon: IconButton(
-                                        icon: const Icon(Icons.close),
+                                        icon: const Icon(
+                                          Icons.close,
+                                          size: 18,
+                                        ),
                                         onPressed: () {
                                           searchController.clear();
                                           dropdownState(() {
@@ -875,7 +890,10 @@ class _MultiSelectDropDownState<T> extends State<MultiSelectDropDown<T>> {
                                         ),
                                       ),
                                       suffixIcon: IconButton(
-                                        icon: const Icon(Icons.close),
+                                        icon: const Icon(
+                                          Icons.close,
+                                          size: 18,
+                                        ),
                                         onPressed: () {
                                           searchController.clear();
                                           dropdownState(() {
