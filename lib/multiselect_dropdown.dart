@@ -929,70 +929,68 @@ class _MultiSelectDropDownState<T> extends State<MultiSelectDropDown<T>> {
     });
   }
 
-  ListTile _buildOption(
-      ValueItem<T> option,
-      Color primaryColor,
-      bool isSelected,
-      StateSetter dropdownState,
-      List<ValueItem<T>> selectedOptions) {
-    return ListTile(
-        title: Text(option.label,
-            style: widget.optionTextStyle ??
-                TextStyle(
-                  fontSize: widget.hintFontSize,
-                )),
-        textColor: Colors.black,
-        selectedColor: widget.selectedOptionTextColor ?? primaryColor,
-        selected: isSelected,
-        autofocus: true,
-        dense: true,
-        tileColor: widget.optionsBackgroundColor,
-        selectedTileColor:
-            widget.selectedOptionBackgroundColor ?? Colors.grey.shade200,
-        enabled: !_disabledOptions.contains(option),
-        onTap: () {
-          if (widget.selectionType == SelectionType.multi) {
-            if (isSelected) {
-              dropdownState(() {
-                selectedOptions.remove(option);
-              });
-              setState(() {
-                _selectedOptions.remove(option);
-              });
-            } else {
-              final bool hasReachMax = widget.maxItems == null
-                  ? false
-                  : (_selectedOptions.length + 1) > widget.maxItems!;
-              if (hasReachMax) return;
+  Widget _buildOption(ValueItem<T> option, Color primaryColor, bool isSelected,
+      StateSetter dropdownState, List<ValueItem<T>> selectedOptions) {
+    return InkWell(
+      child: ListTile(
+          title: Text(option.label,
+              style: widget.optionTextStyle ??
+                  TextStyle(
+                    fontSize: widget.hintFontSize,
+                  )),
+          textColor: Colors.black,
+          selectedColor: widget.selectedOptionTextColor ?? primaryColor,
+          selected: isSelected,
+          autofocus: true,
+          dense: true,
+          tileColor: widget.optionsBackgroundColor,
+          selectedTileColor:
+              widget.selectedOptionBackgroundColor ?? Colors.grey.shade200,
+          enabled: !_disabledOptions.contains(option),
+          onTap: () {
+            if (widget.selectionType == SelectionType.multi) {
+              if (isSelected) {
+                dropdownState(() {
+                  selectedOptions.remove(option);
+                });
+                setState(() {
+                  _selectedOptions.remove(option);
+                });
+              } else {
+                final bool hasReachMax = widget.maxItems == null
+                    ? false
+                    : (_selectedOptions.length + 1) > widget.maxItems!;
+                if (hasReachMax) return;
 
+                dropdownState(() {
+                  selectedOptions.add(option);
+                });
+                setState(() {
+                  _selectedOptions.add(option);
+                });
+              }
+            } else {
               dropdownState(() {
+                selectedOptions.clear();
                 selectedOptions.add(option);
               });
               setState(() {
+                _selectedOptions.clear();
                 _selectedOptions.add(option);
               });
+              _focusNode.unfocus();
+              _searchFocusNode?.unfocus();
             }
-          } else {
-            dropdownState(() {
-              selectedOptions.clear();
-              selectedOptions.add(option);
-            });
-            setState(() {
-              _selectedOptions.clear();
-              _selectedOptions.add(option);
-            });
-            _focusNode.unfocus();
-            _searchFocusNode?.unfocus();
-          }
 
-          if (_controller != null) {
-            _controller!.value._selectedOptions.clear();
-            _controller!.value._selectedOptions.addAll(_selectedOptions);
-          }
+            if (_controller != null) {
+              _controller!.value._selectedOptions.clear();
+              _controller!.value._selectedOptions.addAll(_selectedOptions);
+            }
 
-          widget.onOptionSelected?.call(_selectedOptions);
-        },
-        trailing: _getSelectedIcon(isSelected, primaryColor));
+            widget.onOptionSelected?.call(_selectedOptions);
+          },
+          trailing: _getSelectedIcon(isSelected, primaryColor)),
+    );
   }
 
   /// Make a request to the provided url.
