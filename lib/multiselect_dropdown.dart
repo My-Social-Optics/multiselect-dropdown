@@ -248,10 +248,10 @@ class MultiSelectDropDown<T> extends StatefulWidget {
       this.inputDecoration,
       this.hintStyle,
       this.padding,
-      this.focusedBorderColor = Colors.black54,
-      this.borderColor = Colors.grey,
-      this.borderWidth = 0.4,
-      this.focusedBorderWidth = 0.4,
+      this.focusedBorderColor,
+      this.borderColor,
+      this.borderWidth,
+      this.focusedBorderWidth,
       this.borderRadius = 12.0,
       this.radiusGeometry,
       this.showClearIcon = true,
@@ -594,27 +594,28 @@ class _MultiSelectDropDownState<T> extends State<MultiSelectDropDown<T>> {
   /// Container decoration for the dropdown.
   Decoration _getContainerDecoration() {
     return BoxDecoration(
-        color: widget.fieldBackgroundColor ?? Colors.white,
-        borderRadius: widget.radiusGeometry ??
-            BorderRadius.circular(widget.borderRadius ?? 12.0),
-        border: _focusNode.hasFocus
-            ? Border.all(
-                color: widget.focusedBorderColor ?? Colors.grey,
-                width: widget.focusedBorderWidth ?? 0.4,
+      color: widget.fieldBackgroundColor ?? Colors.white,
+      borderRadius: widget.radiusGeometry ??
+          BorderRadius.circular(widget.borderRadius ?? 12.0),
+      border: _focusNode.hasFocus
+          ? Border.all(
+              color: widget.focusedBorderColor ?? const Color(0xFF3B82F6),
+              width: widget.focusedBorderWidth ?? 1,
+            )
+          : Border.all(
+              color: widget.borderColor ?? Colors.grey,
+              width: widget.borderWidth ?? 0.4,
+            ),
+      boxShadow: _focusNode.hasFocus
+          ? [
+              const BoxShadow(
+                color: Color(0xFF93C5FD),
+                blurRadius: 4,
+                blurStyle: BlurStyle.solid,
               )
-            : Border.all(
-                color: widget.borderColor ?? Colors.grey,
-                width: widget.borderWidth ?? 0.4,
-              ),
-        boxShadow: _focusNode.hasFocus
-            ? [
-                const BoxShadow(
-                  color: Color(0xFF93C5FD),
-                  blurRadius: 4,
-                  blurStyle: BlurStyle.solid,
-                )
-              ]
-            : null);
+            ]
+          : null,
+    );
   }
 
   /// Dispose the focus node and overlay entry.
