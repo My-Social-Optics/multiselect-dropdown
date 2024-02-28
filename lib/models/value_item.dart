@@ -11,22 +11,26 @@ class ValueItem<T> {
   /// The label of the value item
   final String label;
 
+  /// The description of the value item
+  final String? description;
+
   /// The value of the value item
   final T? value;
 
   /// Default constructor for [ValueItem]
-  const ValueItem({required this.label, required this.value});
+  const ValueItem({required this.label, required this.value, this.description});
 
   /// toString method for [ValueItem]
   @override
   String toString() {
-    return 'ValueItem(label: $label, value: $value)';
+    return 'ValueItem(label: $label,description: $description value: $value)';
   }
 
   /// toMap method for [ValueItem]
   Map<String, dynamic> toMap() {
     return {
       'label': label,
+      'description': description,
       'value': value,
     };
   }
@@ -35,6 +39,7 @@ class ValueItem<T> {
   factory ValueItem.fromMap(Map<String, dynamic> map) {
     return ValueItem<T>(
       label: map['label'] ?? '',
+      description: map['description'],
       value: map['value'],
     );
   }
@@ -53,20 +58,23 @@ class ValueItem<T> {
 
     return other is ValueItem<T> &&
         other.label == label &&
+        other.description == description &&
         other.value == value;
   }
 
   /// Hashcode for [ValueItem]
   @override
-  int get hashCode => label.hashCode ^ value.hashCode;
+  int get hashCode => label.hashCode ^ description.hashCode ^ value.hashCode;
 
   /// CopyWith method for [ValueItem]
   ValueItem<T> copyWith({
     String? label,
+    String? description,
     T? value,
   }) {
     return ValueItem<T>(
       label: label ?? this.label,
+      description: description ?? this.description,
       value: value ?? this.value,
     );
   }
