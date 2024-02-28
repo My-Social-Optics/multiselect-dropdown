@@ -985,6 +985,7 @@ class _MultiSelectDropDownState<T> extends State<MultiSelectDropDown<T>> {
 
                                   widget.onOptionSelected
                                       ?.call(_selectedOptions);
+                                  _searchFocusNode?.unfocus();
                                 }
 
                                 if (widget.optionBuilder != null) {

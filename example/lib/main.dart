@@ -61,7 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
   final MultiSelectController<User> _controller = MultiSelectController();
 
   final List<ValueItem> _selectedOptions = [];
-
+  List<ValueItem<User>> _selectedOptions1 = [];
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -80,7 +80,11 @@ class _MyHomePageState extends State<MyHomePage> {
                   showClearIcon: true,
                   controller: _controller,
                   onOptionSelected: (options) {
-                    debugPrint(options.toString());
+                    setState(() {
+                      _selectedOptions1 = options;
+                    });
+                    debugPrint(_selectedOptions1.toString());
+
                   },
                   options: <ValueItem<User>>[
                     ValueItem(
@@ -99,7 +103,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         label: 'Option 5', value: User(name: 'User 5', id: 5)),
                   ],
                   maxItems: 4,
-                  selectionType: SelectionType.single,
+                  selectionType: SelectionType.multi,
+                  selectedOptions: _selectedOptions1,
                   chipConfig: const ChipConfig(
                       wrapType: WrapType.wrap, backgroundColor: Colors.red),
                   optionTextStyle: const TextStyle(fontSize: 16),
@@ -197,38 +202,38 @@ class _MyHomePageState extends State<MyHomePage> {
                 const SizedBox(
                   height: 4,
                 ),
-                MultiSelectDropDown.network(
-                  dropdownHeight: 300,
-                  onOptionSelected: (options) {
-                    debugPrint(options.toString());
-                  },
-                  searchEnabled: true,
-                  networkConfig: NetworkConfig(
-                    url: 'https://jsonplaceholder.typicode.com/users',
-                    method: RequestMethod.get,
-                    headers: {
-                      'Content-Type': 'application/json',
-                    },
-                  ),
-                  chipConfig: const ChipConfig(wrapType: WrapType.wrap),
-                  responseParser: (response) {
-                    final list = (response as List<dynamic>).map((e) {
-                      final item = e as Map<String, dynamic>;
-                      return ValueItem(
-                        label: item['name'],
-                        value: item['id'].toString(),
-                      );
-                    }).toList();
-
-                    return Future.value(list);
-                  },
-                  responseErrorBuilder: ((context, body) {
-                    return const Padding(
-                      padding: EdgeInsets.all(16.0),
-                      child: Text('Error fetching the data'),
-                    );
-                  }),
-                ),
+                // MultiSelectDropDown.network(
+                //   dropdownHeight: 300,
+                //   onOptionSelected: (options) {
+                //     debugPrint(options.toString());
+                //   },
+                //   searchEnabled: true,
+                //   networkConfig: NetworkConfig(
+                //     url: 'https://jsonplaceholder.typicode.com/users',
+                //     method: RequestMethod.get,
+                //     headers: {
+                //       'Content-Type': 'application/json',
+                //     },
+                //   ),
+                //   chipConfig: const ChipConfig(wrapType: WrapType.wrap),
+                //   responseParser: (response) {
+                //     final list = (response as List<dynamic>).map((e) {
+                //       final item = e as Map<String, dynamic>;
+                //       return ValueItem(
+                //         label: item['name'],
+                //         value: item['id'].toString(),
+                //       );
+                //     }).toList();
+                //
+                //     return Future.value(list);
+                //   },
+                //   responseErrorBuilder: ((context, body) {
+                //     return const Padding(
+                //       padding: EdgeInsets.all(16.0),
+                //       child: Text('Error fetching the data'),
+                //     );
+                //   }),
+                // ),
                 const SizedBox(height: 50)
               ],
             ),
