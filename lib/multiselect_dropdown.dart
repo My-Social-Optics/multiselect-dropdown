@@ -420,9 +420,11 @@ class _MultiSelectDropDownState<T> extends State<MultiSelectDropDown<T>> {
   /// Adds the selected options and disabled options to the options list.
   void _addOptions() {
     setState(() {
-      _selectedOptions.addAll(_controller?.selectedOptions.isNotEmpty == true
-          ? _controller!.selectedOptions
-          : widget.selectedOptions);
+      _selectedOptions.addAll(
+        _controller?.selectedOptions.isNotEmpty == true
+            ? _controller!.selectedOptions
+            : widget.selectedOptions,
+      );
       _disabledOptions.addAll(_controller?.disabledOptions.isNotEmpty == true
           ? _controller!.disabledOptions
           : widget.disabledOptions);
@@ -1214,7 +1216,6 @@ class _MultiSelectDropDownState<T> extends State<MultiSelectDropDown<T>> {
         _selectedOptions.clear();
         _selectedOptions.addAll(_controller!.value._selectedOptions);
       });
-      widget.onOptionSelected?.call(_selectedOptions);
     }
 
     if (_selectionMode != _controller!.value._isDropdownOpen) {
