@@ -9,6 +9,7 @@ import 'package:multi_dropdown/models/network_config.dart';
 import 'package:multi_dropdown/widgets/checkbox.dart';
 import 'package:multi_dropdown/widgets/colors.dart';
 import 'package:multi_dropdown/widgets/hint_text.dart';
+import 'package:multi_dropdown/widgets/hover.dart';
 import 'package:multi_dropdown/widgets/selection_chip.dart';
 import 'package:multi_dropdown/widgets/single_selected_item.dart';
 import 'package:http/http.dart' as http;
@@ -1024,40 +1025,43 @@ class _MultiSelectDropDownState<T> extends State<MultiSelectDropDown<T>> {
     });
   }
 
-  ListTile _buildOption(
-          {required SelectionType selectionType,
-          required ValueItem<T> option,
-          required Color primaryColor,
-          required bool isSelected,
-          required StateSetter dropdownState,
-          required void Function() onTap,
-          required List<ValueItem<T>> selectedOptions}) =>
-      ListTile(
-          leading: selectionType == SelectionType.multi
-              ? SOCheckbox(
-                  isActive: isSelected,
-                )
-              : null,
-          title: Text(option.label,
-              style: widget.optionTextStyle ??
-                  TextStyle(
-                    fontSize: widget.hintFontSize,
-                  )),
-          subtitle: Text(option.description ?? '',
-              style: TextStyle(
-                color: SOColors.grays,
-                fontSize: 12,
-              )),
-          selectedColor: widget.selectedOptionTextColor ?? primaryColor,
-          selected: isSelected,
-          autofocus: true,
-          dense: true,
-          tileColor: widget.optionsBackgroundColor ?? Colors.white,
-          selectedTileColor:
-              widget.selectedOptionBackgroundColor ?? Colors.grey.shade200,
-          enabled: !_disabledOptions.contains(option),
-          onTap: onTap,
-          trailing: _getSelectedIcon(isSelected, primaryColor));
+  Widget _buildOption({
+    required SelectionType selectionType,
+    required ValueItem<T> option,
+    required Color primaryColor,
+    required bool isSelected,
+    required StateSetter dropdownState,
+    required void Function() onTap,
+    required List<ValueItem<T>> selectedOptions,
+  }) =>
+      HoverWidget(
+        onTap: onTap,
+        child: ListTile(
+            leading: selectionType == SelectionType.multi
+                ? SOCheckbox(
+                    isActive: isSelected,
+                  )
+                : null,
+            title: Text(option.label,
+                style: widget.optionTextStyle ??
+                    TextStyle(
+                      fontSize: widget.hintFontSize,
+                    )),
+            subtitle: Text(option.description ?? '',
+                style: TextStyle(
+                  color: SOColors.grays,
+                  fontSize: 12,
+                )),
+            selectedColor: widget.selectedOptionTextColor ?? primaryColor,
+            selected: isSelected,
+            autofocus: true,
+            dense: true,
+            tileColor: widget.optionsBackgroundColor ?? Colors.white,
+            selectedTileColor:
+                widget.selectedOptionBackgroundColor ?? Colors.grey.shade200,
+            enabled: !_disabledOptions.contains(option),
+            trailing: _getSelectedIcon(isSelected, primaryColor)),
+      );
 
   /// Make a request to the provided url.
   /// The response then is parsed to a list of ValueItem objects.
