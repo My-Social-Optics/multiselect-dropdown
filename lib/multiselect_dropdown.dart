@@ -1040,12 +1040,11 @@ class _MultiSelectDropDownState<T> extends State<MultiSelectDropDown<T>> {
                   TextStyle(
                     fontSize: widget.hintFontSize,
                   )),
-          subtitle: Text(option.label,
-              style: widget.optionTextStyle ??
-                  TextStyle(
-                    color: SOColors.grays,
-                    fontSize: 12,
-                  )),
+          subtitle: Text(option.description ?? '',
+              style: TextStyle(
+                color: SOColors.grays,
+                fontSize: 12,
+              )),
           selectedColor: widget.selectedOptionTextColor ?? primaryColor,
           selected: isSelected,
           autofocus: true,
