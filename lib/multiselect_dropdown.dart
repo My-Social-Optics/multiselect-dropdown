@@ -1,14 +1,17 @@
 library multiselect_dropdown;
 
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart';
 import 'package:multi_dropdown/models/network_config.dart';
 import 'package:multi_dropdown/widgets/checkbox.dart';
 import 'package:multi_dropdown/widgets/colors.dart';
 import 'package:multi_dropdown/widgets/hint_text.dart';
 import 'package:multi_dropdown/widgets/selection_chip.dart';
 import 'package:multi_dropdown/widgets/single_selected_item.dart';
-
+import 'package:http/http.dart' as http;
 import 'models/chip_config.dart';
 import 'models/value_item.dart';
 import 'enum/app_enums.dart';
@@ -375,10 +378,65 @@ class _MultiSelectDropDownState<T> extends State<MultiSelectDropDown<T>> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      _overlayState ??= Overlay.of(context);
+      _initialize();
     });
     _focusNode = widget.focusNode ?? FocusNode();
     _controller = widget.controller ?? MultiSelectController<T>();
+  }
+
+  /// Initializes the options, selected options and disabled options.
+  /// If the options are fetched from the network, then the network call is made.
+  /// If the options are passed as a parameter, then the options are initialized.
+  void _initialize() async {
+    if (!mounted) return;
+    if (widget.networkConfig?.url != null) {
+      await _fetchNetwork();
+    } else {
+      _options.addAll(_controller?.options.isNotEmpty == true
+          ? _controller!.options
+          : widget.options);
+    }
+    _addOptions();
+    if (mounted) {
+      _initializeOverlay();
+    } else {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+        _initializeOverlay();
+      });
+    }
+  }
+
+  void _initializeOverlay() {
+    _overlayState ??= Overlay.of(context);
+
+    _focusNode.addListener(_handleFocusChange);
+
+    if (widget.searchEnabled) {
+      _searchFocusNode = FocusNode();
+      _searchFocusNode!.addListener(_handleFocusChange);
+    }
+  }
+
+  /// Adds the selected options and disabled options to the options list.
+  void _addOptions() {
+    setState(() {
+      _selectedOptions.addAll(_controller?.selectedOptions.isNotEmpty == true
+          ? _controller!.selectedOptions
+          : widget.selectedOptions);
+      _disabledOptions.addAll(_controller?.disabledOptions.isNotEmpty == true
+          ? _controller!.disabledOptions
+          : widget.disabledOptions);
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (_controller != null && _controller?._isDisposed == false) {
+        _controller!.setOptions(_options);
+        _controller!.setSelectedOptions(_selectedOptions);
+        _controller!.setDisabledOptions(_disabledOptions);
+
+        _controller!.addListener(_handleControllerChange);
+      }
+    });
   }
 
   /// Handles the focus change to show/hide the dropdown.
@@ -998,6 +1056,61 @@ class _MultiSelectDropDownState<T> extends State<MultiSelectDropDown<T>> {
           enabled: !_disabledOptions.contains(option),
           onTap: onTap,
           trailing: _getSelectedIcon(isSelected, primaryColor));
+
+  /// Make a request to the provided url.
+  /// The response then is parsed to a list of ValueItem objects.
+  Future<void> _fetchNetwork() async {
+    final result = await _performNetworkRequest();
+    http.get(Uri.parse(widget.networkConfig!.url));
+    if (result.statusCode == 200) {
+      final data = json.decode(result.body);
+      final List<ValueItem<T>> parsedOptions =
+          await widget.responseParser!(data);
+      _reponseBody = null;
+      _options.addAll(parsedOptions);
+    } else {
+      _reponseBody = result.body;
+    }
+  }
+
+  /// Perform the network request according to the provided configuration.
+  Future<Response> _performNetworkRequest() async {
+    switch (widget.networkConfig!.method) {
+      case RequestMethod.get:
+        return await http.get(
+          Uri.parse(widget.networkConfig!.url),
+          headers: widget.networkConfig!.headers,
+        );
+      case RequestMethod.post:
+        return await http.post(
+          Uri.parse(widget.networkConfig!.url),
+          body: widget.networkConfig!.body,
+          headers: widget.networkConfig!.headers,
+        );
+      case RequestMethod.put:
+        return await http.put(
+          Uri.parse(widget.networkConfig!.url),
+          body: widget.networkConfig!.body,
+          headers: widget.networkConfig!.headers,
+        );
+      case RequestMethod.patch:
+        return await http.patch(
+          Uri.parse(widget.networkConfig!.url),
+          body: widget.networkConfig!.body,
+          headers: widget.networkConfig!.headers,
+        );
+      case RequestMethod.delete:
+        return await http.delete(
+          Uri.parse(widget.networkConfig!.url),
+          headers: widget.networkConfig!.headers,
+        );
+      default:
+        return await http.get(
+          Uri.parse(widget.networkConfig!.url),
+          headers: widget.networkConfig!.headers,
+        );
+    }
+  }
 
   /// Builds overlay entry for showing error when fetching data from network fails.
   OverlayEntry _buildNetworkErrorOverlayEntry() {
